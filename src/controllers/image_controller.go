@@ -35,30 +35,17 @@ func (ic image_controller) InitializeHooks() {
 }
 
 func (ic image_controller) uploadImage(w http.ResponseWriter, r *http.Request, p httprouter.Params) error {
-	if !utils.IsValidRequest(r, w) {
-		return nil
-	}
-
 	valid, err := ic.uploadDs.ValidateData(w, r, p)
 	if !valid {
 		return err
 	}
-
 	return ic.uploadDs.UploadFile(w, r, p)
 }
 
 func (ic image_controller) getImagesLocation(w http.ResponseWriter, r *http.Request, p httprouter.Params) error {
-	if !utils.IsValidRequest(r, w) {
-		return nil
-	}
-
 	return ic.downloadDs.GetImagesLocation(w, r)
 }
 
 func (ic image_controller) deleteImages(w http.ResponseWriter, r *http.Request, p httprouter.Params) error {
-	if !utils.IsValidRequest(r, w) {
-		return nil
-	}
-
 	return ic.deleteDs.DeleteImages(w, r)
 }

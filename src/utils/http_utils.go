@@ -5,19 +5,8 @@ import (
 	"github.com/gorilla/context"
 	"github.com/julienschmidt/httprouter"
 	"github.com/justinas/alice"
-	"log"
 	"net/http"
 )
-
-func IsValidRequest(r *http.Request, w http.ResponseWriter) bool {
-	userAgent := r.Header.Get(USER_AGENT)
-	if userAgent == "" || userAgent != "agent-php" {
-		log.Println("Invalid request headers")
-		WrapResponse(w, GetErrorContent(2), http.StatusBadRequest)
-		return false
-	}
-	return true
-}
 
 func WrapResponse(writer http.ResponseWriter, content interface{}, status int) {
 	writer.Header().Set(FORMAT, "application/json")
