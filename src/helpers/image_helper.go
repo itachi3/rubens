@@ -1,8 +1,7 @@
 package helpers
 
 import (
-	"agentdesks"
-	"agentdesks/utils"
+	"utils"
 	"bytes"
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
@@ -22,12 +21,12 @@ import (
 )
 
 type ImageHelper struct {
-	config   *agentdesks.Config
+	config   *utils.Config
 	s3Conn   *s3.S3
 	fileName string
 }
 
-func NewImageHelper(conf *agentdesks.Config) *ImageHelper {
+func NewImageHelper(conf *utils.Config) *ImageHelper {
 	return &ImageHelper{
 		config: conf,
 		s3Conn: s3.New(session.New(), &aws.Config{Region: aws.String(conf.GetAmazonS3Region())}),

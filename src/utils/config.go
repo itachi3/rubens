@@ -1,4 +1,4 @@
-package agentdesks
+package utils
 
 type (
 	Config struct {

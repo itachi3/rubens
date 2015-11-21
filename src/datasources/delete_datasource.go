@@ -1,10 +1,9 @@
 package datasources
 
 import (
-	"agentdesks"
-	"agentdesks/helpers"
-	"agentdesks/models"
-	"agentdesks/utils"
+	"helpers"
+	"models"
+	"utils"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
@@ -15,7 +14,7 @@ type DeleteDataSource struct {
 	helper  *helpers.ImageHelper
 }
 
-func NewDeleteDataSource(conn *models.Connections, conf *agentdesks.Config) *DeleteDataSource {
+func NewDeleteDataSource(conn *models.Connections, conf *utils.Config) *DeleteDataSource {
 	return &DeleteDataSource{
 		connect: conn,
 		helper:  helpers.NewImageHelper(conf),

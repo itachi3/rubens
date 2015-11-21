@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"agentdesks"
-	"agentdesks/datasources"
-	"agentdesks/models"
-	"agentdesks/utils"
+	"datasources"
+	"models"
+	"utils"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 )
@@ -16,7 +15,7 @@ type image_controller struct {
 	deleteDs   *datasources.DeleteDataSource
 }
 
-func NewImageController(ru *httprouter.Router, conn *models.Connections, config *agentdesks.Config) *image_controller {
+func NewImageController(ru *httprouter.Router, conn *models.Connections, config *utils.Config) *image_controller {
 	return &image_controller{
 		router:     ru,
 		uploadDs:   datasources.NewUploadDataSource(conn, config),

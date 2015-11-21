@@ -1,10 +1,9 @@
 package datasources
 
 import (
-	"agentdesks"
-	"agentdesks/helpers"
-	"agentdesks/models"
-	"agentdesks/utils"
+	"helpers"
+	"models"
+	"utils"
 	"bytes"
 	"github.com/julienschmidt/httprouter"
 	"log"
@@ -22,7 +21,7 @@ type UploadDataSource struct {
 	helper *helpers.ImageHelper
 }
 
-func NewUploadDataSource(conn *models.Connections, config *agentdesks.Config) *UploadDataSource {
+func NewUploadDataSource(conn *models.Connections, config *utils.Config) *UploadDataSource {
 	return &UploadDataSource{
 		conn:   conn,
 		helper: helpers.NewImageHelper(config),

@@ -1,10 +1,9 @@
 package datasources
 
 import (
-	"agentdesks"
-	"agentdesks/helpers"
-	"agentdesks/models"
-	"agentdesks/utils"
+	"helpers"
+	"models"
+	"utils"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
@@ -15,7 +14,7 @@ type DownloadDataSource struct {
 	helper *helpers.ImageHelper
 }
 
-func NewDownloadDataSource(conn *models.Connections, config *agentdesks.Config) *DownloadDataSource {
+func NewDownloadDataSource(conn *models.Connections, config *utils.Config) *DownloadDataSource {
 	return &DownloadDataSource{
 		conn:   conn,
 		helper: helpers.NewImageHelper(config),
