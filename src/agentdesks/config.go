@@ -25,6 +25,7 @@ type (
 	AmazonS3 struct {
 		Region string
 		Bucket string `json:"bucketName"`
+		ACL 	 string
 	}
 
 	Images struct {
@@ -47,4 +48,8 @@ func (config* Config) GetAmazonS3Region() string {
 
 func (config* Config) GetAmazonS3Bucket() string {
 	return config.Datastore.AwsS3.Bucket
+}
+
+func (config* Config) GetAmazonS3Acl() string {
+	return config.Datastore.AwsS3.ACL
 }

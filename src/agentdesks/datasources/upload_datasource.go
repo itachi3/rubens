@@ -12,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"os"
-	"io"
 )
 
 // In MB
@@ -105,7 +103,7 @@ func (ds UploadDataSource) UploadFile(w http.ResponseWriter, r *http.Request, p 
 		   	2. So that client doesn't have to wait for compressions
 			3. Store the path in redis and send back the location response
 	*/
-	key := p.ByName(utils.USER_ID) + "/" + p.ByName(utils.PROPERTY_ID)
+	key := p.ByName(utils.IMAGE_KEY)
 	value := baseURL + path + "/{width}x{height}_" + timeStamp + "." + fileType[1]
 	_, err = ds.conn.RedisConn.Do("RPUSH", key, value)
 	if err != nil {

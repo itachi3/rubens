@@ -5,12 +5,12 @@
   },
   "dataStores" : {
     "redis" : {
-      "protocol" : "tcp",
       "port" : "6379"
     },
     "amazonS3" : {
       "region" : "us-east-1",
-      "bucketName" : "image.agentdesks.com"
+      "bucketName" : "image.agentdesks.com",
+      "acl" : "public-read"
     }
   },
   "image" : {

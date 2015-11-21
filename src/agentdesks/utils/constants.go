@@ -4,8 +4,7 @@ const (
 	USER_AGENT      string = "X-User-Agent"
 	FORMAT          string = "Content-Type"
 	SIZE            string = "Content-Length"
-	USER_ID         string = "userId"
-	PROPERTY_ID     string = "propertyId"
+	IMAGE_KEY       string = "key"
 	IMAGES_BASE_URL string = "https://s3.amazonaws.com/"
 	S3_SEPARATOR    string = "/"
 )

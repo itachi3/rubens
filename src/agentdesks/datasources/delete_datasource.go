@@ -24,9 +24,7 @@ func NewDeleteDataSource(conn *models.Connections, conf *agentdesks.Config) *Del
 
 func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Request) error {
 	queryValues := r.URL.Query()
-	userId := queryValues.Get(utils.USER_ID)
-	propertyId := queryValues.Get(utils.PROPERTY_ID)
-	key := userId + "/" + propertyId
+	key := queryValues.Get(utils.IMAGE_KEY)
 	fileLocation, err := redis.Strings(deleteDs.connect.RedisConn.Do("LRANGE", key, 0, -1))
 	if err != nil {
 		log.Println("Error retrieving records (redis) : ", err)

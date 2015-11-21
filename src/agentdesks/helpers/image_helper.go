@@ -35,14 +35,10 @@ func NewImageHelper(conf *agentdesks.Config) *ImageHelper {
 }
 
 func (ih *ImageHelper) GetPath(p httprouter.Params) (string, string) {
-	userId := p.ByName(utils.USER_ID)
-	propertyId := p.ByName(utils.PROPERTY_ID)
 	return utils.IMAGES_BASE_URL +
 			ih.config.GetAmazonS3Bucket() +
 			utils.S3_SEPARATOR,
-		userId +
-			utils.S3_SEPARATOR +
-			propertyId
+			p.ByName(utils.IMAGE_KEY)
 }
 
 func (ih *ImageHelper) Decode(r *http.Request, fileType string) (image.Image, error) {
@@ -90,7 +86,7 @@ func (ih *ImageHelper) UploadToS3(buf *bytes.Buffer, pathname string, fileFormat
 	params := &s3.PutObjectInput{
 		Bucket:      aws.String(ih.config.GetAmazonS3Bucket()),
 		Key:         aws.String(pathname),
-		ACL:         aws.String("public-read"),
+		ACL:         aws.String(ih.config.GetAmazonS3Acl()),
 		Body:        bytes.NewReader(buf.Bytes()),
 		ContentType: aws.String(fileFormat),
 	}

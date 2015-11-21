@@ -24,7 +24,7 @@ func NewDownloadDataSource(conn *models.Connections, config *agentdesks.Config) 
 
 func (download DownloadDataSource) GetImagesLocation(w http.ResponseWriter, r *http.Request) error {
 	queryValues := r.URL.Query()
-	key := queryValues.Get(utils.USER_ID) + "/" + queryValues.Get(utils.PROPERTY_ID)
+	key := queryValues.Get(utils.IMAGE_KEY)
 	//Always get the latest location
 	fileLocation, err := redis.Strings(download.conn.RedisConn.Do("LRANGE", key, 0, -1))
 	if err != nil {

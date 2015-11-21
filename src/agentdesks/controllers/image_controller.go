@@ -27,11 +27,11 @@ func NewImageController(ru *httprouter.Router, conn *models.Connections, config 
 
 func (ic image_controller) InitializeHooks() {
 
-	ic.router.POST("/v1.0/:userId/user/:propertyId/property/image", utils.ErrHandle(ic.uploadImage).ToHandle())
+	ic.router.POST("/1/:key/image", utils.ErrHandle(ic.uploadImage).ToHandle())
 
-	ic.router.GET("/v1.0/user/property/imageUrls", utils.ErrHandle(ic.getImagesLocation).ToHandle())
+	ic.router.GET("/1/imageUrls", utils.ErrHandle(ic.getImagesLocation).ToHandle())
 
-	ic.router.DELETE("/v1.0/user/property/image", utils.ErrHandle(ic.deleteImages).ToHandle())
+	ic.router.DELETE("/1/image", utils.ErrHandle(ic.deleteImages).ToHandle())
 
 }
 
