@@ -31,6 +31,11 @@ func (download DownloadDataSource) GetImagesLocation(w http.ResponseWriter, r *h
 		return err
 	}
 
+	if len(fileLocation) == 0 {
+		utils.WrapResponse(w, nil, http.StatusNotFound)
+		return nil
+	}
+
 	success := models.ImageUrlResponse{
 		FileURL: fileLocation,
 	}
