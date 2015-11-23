@@ -1,7 +1,7 @@
 Rubens
 ======
 
-Rubens is a simple Go server to manipulate images (resize) built on top of `resize <https://github.com/nfnt/resize>`_
+Rubens is a simple Go server to manipulate images (resize) built on top of `resize <https://github.com/nfnt/resize>`
 
 The server as a proxy of your storage engine (Amazon S3) and serves from a redis cache. Configuration and image sizes can be specified via config.json
 
@@ -36,22 +36,22 @@ Configuration should be stored in a readable file and in JSON format.
 .. code-block:: json
 
     {
-  "logs" : {
+    "logs" : {
     "errorLog" : "/var/log/go/error.log",
     "accessLog" : "/var/log/go/access.log"
-  },
-  "dataStores" : {
-    "redis" : {
-      "protocol" : "tcp",
-      "port" : "6379"
     },
-    "amazonS3" : {
-      "region" : "us-east-1",
-      "bucketName" : "image.agentdesks.com"
-    }
-  },
-  "image" : {
+    "dataStores" : {
+        "redis" : {
+            "protocol" : "tcp",
+            "port" : "6379"
+        },
+        "amazonS3" : {
+            "region" : "us-east-1",
+            "bucketName" : "image.agentdesks.com"
+        }
+    },
+    "image" : {
     "width" : ["900", "380", "240"],
     "height" : ["1280", "640", "340"]
-  }
-}
+    }
+    }
