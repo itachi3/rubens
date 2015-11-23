@@ -1,21 +1,10 @@
-picfit
+Rubens
 ======
 
-.. image:: https://secure.travis-ci.org/thoas/picfit.png?branch=master
-    :alt: Build Status
-    :target: http://travis-ci.org/thoas/picfit
+Rubens is a simple Go server to manipulate images (resize) built on top of `resize <https://github.com/nfnt/resize>`
 
-.. image:: https://d262ilb51hltx0.cloudfront.net/max/800/1*oR04S6Ie7s1JctwjsDsN0w.png
+The server as a proxy of your storage engine (Amazon S3) and serves from a redis cache. Configuration and image sizes can be specified via config.json
 
-picfit is a reusable Go server to manipulate (resize, thumbnail, etc.)
-images built on top of `negroni <https://github.com/codegangsta/negroni>`_
-and `gorilla mux <https://github.com/gorilla/mux>`_.
-
-It will act as a proxy of your storage engine and will be
-served ideally behind an http cache system like varnish_.
-
-It supports multiple `storages backends <https://github.com/thoas/gostorages>`_
-and multiple `key/value stores <https://github.com/thoas/gokvstores>`_.
 
 Installation
 ============
@@ -24,23 +13,18 @@ Build it
 --------
 
 1. Make sure you have a Go language compiler >= 1.3 (required) and git installed.
-2. Make sure you have the following go system dependencies in your $PATH: bzr, svn, hg, git
-3. Ensure your GOPATH_ is properly set.
-4. Download it:
-
+2. Ensure your GOPATH is properly set. Eg: If your workspace is $HOME/work then GOPATH could be $HOME/work:$HOME/work/github.com/itachi3/rubens
+3. Download it:
 ::
 
-    git clone https://github.com/thoas/picfit.git
+    go get github.com/itachi3/rubens
 
-4. Run ``make build``
+You now have rubens and the libraries it uses for image handling.
+4. Build using 
+::
+    go build main.go
 
-You have now a binary version of picfit in the ``bin`` directory which
-fits perfectly with your architecture.
-
-Debian and Ubuntu
------------------
-
-We will provide Debian package when we will be completely stable ;)
+You now have the rubens executable ready to serve
 
 Configuration
 =============
@@ -52,15 +36,25 @@ Configuration should be stored in a readable file and in JSON format.
 .. code-block:: json
 
     {
-      "kvstore": {
-        "type": "[KVSTORE]"
-      },
-      "storage": {
-        "src": {
-          "type": "[STORAGE]"
-        }
-      }
+  "logs" : {
+    "errorLog" : "/var/log/go/error.log",
+    "accessLog" : "/var/log/go/access.log"
+  },
+  "dataStores" : {
+    "redis" : {
+      "protocol" : "tcp",
+      "port" : "6379"
+    },
+    "amazonS3" : {
+      "region" : "us-east-1",
+      "bucketName" : "image.agentdesks.com"
     }
+  },
+  "image" : {
+    "width" : ["900", "380", "240"],
+    "height" : ["1280", "640", "340"]
+  }
+}
 
 ``[KVSTORE]`` can be:
 
