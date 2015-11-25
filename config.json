@@ -8,8 +8,8 @@
       "port" : "6379"
     },
     "amazonS3" : {
-      "region" : "us-east-1",
-      "bucketName" : "image.agentdesks.com",
+      "region" : "bucketRegion",
+      "bucketName" : "bucketName",
       "acl" : "public-read"
     }
   },

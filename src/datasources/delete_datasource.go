@@ -35,5 +35,9 @@ func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Re
 		return nil
 	}
 
-	return deleteDs.helper.BatchDelete("image.agentdesks.com",key)
+	err = deleteDs.helper.BatchDelete(key)
+	if err == nil {
+		deleteDs.connect.RedisConn.Do("DEL", key)
+	}
+	return err
 }

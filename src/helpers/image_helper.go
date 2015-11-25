@@ -97,9 +97,9 @@ func (ih *ImageHelper) UploadToS3(buf *bytes.Buffer, pathname string, fileFormat
 	return nil
 }
 
-func (ih *ImageHelper) BatchDelete(bucket string, key string) error {
+func (ih *ImageHelper) BatchDelete(key string) error {
 	params := &s3.ListObjectsInput{
-		Bucket: aws.String(bucket),
+		Bucket: aws.String(ih.config.GetAmazonS3Bucket()),
 		Prefix: aws.String(key),
 	}
 
@@ -127,7 +127,7 @@ func (ih *ImageHelper) BatchDelete(bucket string, key string) error {
 			}
 
 			batchParams = &s3.DeleteObjectsInput{
-				Bucket: aws.String(bucket),
+				Bucket: aws.String(ih.config.GetAmazonS3Bucket()),
 				Delete: batchDelete,
 			}
 
