@@ -1,20 +1,63 @@
 {
-  "logs" : {
-    "errorLog" : "/var/log/go/error.log",
-    "accessLog" : "/var/log/go/access.log"
+  "port": "8000",
+  "logs": {
+    "errorLog": "/var/log/go/error.log",
+    "accessLog": "/var/log/go/access.log"
   },
-  "dataStores" : {
-    "redis" : {
-      "port" : "6379"
+  "dataStores": {
+    "redis": {
+      "protocol": "tcp",
+      "port": "6379"
     },
-    "amazonS3" : {
-      "region" : "bucketRegion",
-      "bucketName" : "bucketName",
-      "acl" : "public-read"
+    "amazonS3": {
+      "region": "us-east-1",
+      "bucketName": "image.agentdesks.com"
     }
   },
-  "image" : {
-    "width" : ["900", "380", "240"],
-    "height" : ["1280", "640", "340"]
+  "imageBucket": {
+    "HD": {
+      "width": [
+        "1440",
+        "960",
+        "720",
+        "650",
+        "480"
+      ],
+      "height": [
+        "645",
+        "430",
+        "322",
+        "420",
+        "215"
+      ]
+    },
+    "thumbnail": {
+      "width": [
+        "400",
+        "240",
+        "160",
+        "120",
+        "80"
+      ],
+      "height": [
+        "200",
+        "240",
+        "160",
+        "120",
+        "80"
+      ]
+    },
+    "profile": {
+      "width": [
+        "550",
+        "128",
+        "48"
+      ],
+      "height": [
+        "360",
+        "128",
+        "48"
+      ]
+    }
   }
 }

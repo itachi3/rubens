@@ -2,16 +2,17 @@ package main
 
 import (
 	//Our libraries
-	"controllers"
-	"utils"
+	"agentdesks"
+	"agentdesks/controllers"
+	"agentdesks/utils"
 
 	//Third party libraries
 	"github.com/gorilla/handlers"
 	"github.com/julienschmidt/httprouter"
 
 	//Standard Library
-	"libs"
-	"models"
+	"agentdesks/libs"
+	"agentdesks/models"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -19,7 +20,7 @@ import (
 	"os"
 )
 
-var config utils.Config
+var config agentdesks.Config
 
 func myLoggingHandler(h http.Handler) http.Handler {
 	logFile, err := os.OpenFile(config.Logs.AccessLog, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -54,5 +55,5 @@ func main() {
 	*/
 	errorLog := utils.InitializeErrorLog(&config)
 	defer errorLog.Close()
-	log.Fatal(http.ListenAndServe(":8000", myLoggingHandler(r)))
+	log.Fatal(http.ListenAndServe(":"+config.Port, myLoggingHandler(r)))
 }
