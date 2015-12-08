@@ -8,6 +8,11 @@ type (
 	}
 
 	ImageUrlResponse struct {
-		FileURL []string `json:"fileURL"`
+		DynamicImageURL []string `json:"dynamicImageURL"`
+	}
+
+	UploadResponse struct {
+		ImageURL string `json:"imageURL"`
+		DynamicImageURL string `json:"dynamicImageURL"`
 	}
 )

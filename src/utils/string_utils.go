@@ -1,10 +1,17 @@
 package utils
 
-func Search(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
+func Search(format []string, list []string) bool {
+	for _, a := range format {
+		var success = false
+		for _, b := range list {
+			if a == b {
+				success = true
+			}
+		}
+
+		if !success {
+			return false
 		}
 	}
-	return false
+	return true
 }

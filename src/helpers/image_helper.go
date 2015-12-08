@@ -1,52 +1,49 @@
 package helpers
 
 import (
-	"utils"
+	"agentdesks"
+	"agentdesks/utils"
 	"bytes"
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/julienschmidt/httprouter"
-	"github.com/nfnt/resize"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
 	"io"
 	"log"
-	"net/http"
+	"mime/multipart"
+	"agentdesks/models"
 	"strconv"
-	"strings"
+	"github.com/nfnt/resize"
 )
 
 type ImageHelper struct {
-	config   *utils.Config
+	Config   *agentdesks.Config
 	s3Conn   *s3.S3
 	fileName string
 }
 
-func NewImageHelper(conf *utils.Config) *ImageHelper {
+func NewImageHelper(conf *agentdesks.Config) *ImageHelper {
 	return &ImageHelper{
-		config: conf,
+		Config: conf,
 		s3Conn: s3.New(session.New(), &aws.Config{Region: aws.String(conf.GetAmazonS3Region())}),
 	}
 }
 
-func (ih *ImageHelper) GetPath(p httprouter.Params) (string, string) {
-	return utils.IMAGES_BASE_URL +
-			ih.config.GetAmazonS3Bucket() +
-			utils.S3_SEPARATOR,
-			p.ByName(utils.IMAGE_KEY)
+func (ih *ImageHelper) GetS3Path() string {
+	return utils.IMAGES_BASE_URL + ih.Config.GetAmazonS3Bucket() + utils.S3_SEPARATOR
 }
 
-func (ih *ImageHelper) Decode(r *http.Request, fileType string) (image.Image, error) {
+func (ih *ImageHelper) Decode(file multipart.File, fileType string) (image.Image, error) {
 	if fileType == "png" {
-		return png.Decode(r.Body)
+		return png.Decode(file)
 	} else if fileType == "jpeg" || fileType == "jpg" {
-		return jpeg.Decode(r.Body)
+		return jpeg.Decode(file)
 	} else if fileType == "gif" {
-		return gif.Decode(r.Body)
+		return gif.Decode(file)
 	}
 	log.Println("Unsupported media for decoding ", fileType)
 	return nil, errors.New("Unsupported media type")
@@ -64,28 +61,29 @@ func (ih *ImageHelper) Encode(w io.Writer, img image.Image, fileType string) err
 	return errors.New("Unsupported media type")
 }
 
-func (ih *ImageHelper) ScaleImage(path string, img image.Image, fileFormat string) {
+func (ih *ImageHelper) ScaleImage(img image.Image, config models.UploadModel) {
+	bucket := ih.Config.GetImageBucket(config.GetBucket())
 	var width, height string
 	var w, h int
-	fileType := strings.Split(fileFormat, "/")
-	for index, _ := range ih.config.Img.Width {
-		width = ih.config.Img.Width[index]
-		height = ih.config.Img.Height[index]
+	fileType := config.GetConversionType()
+	for index, _ := range bucket.Width {
+		width = bucket.Width[index]
+		height = bucket.Height[index]
 		buf := new(bytes.Buffer)
 		w, _ = strconv.Atoi(width)
 		h, _ = strconv.Atoi(height)
 		m := resize.Resize(uint(w), uint(h), img, resize.MitchellNetravali)
-		ih.Encode(buf, m, fileType[1])
-		pathname := path + utils.S3_SEPARATOR + width + "x" + height + "_" + ih.fileName + "." + fileType[1]
-		go ih.UploadToS3(buf, pathname, fileFormat)
+		ih.Encode(buf, m, fileType)
+		pathname := config.GetFilePath() + utils.S3_SEPARATOR + ih.fileName + "_" + width + "x" + height + "." + fileType
+		go ih.UploadToS3(buf, pathname, "image/" + fileType)
 	}
 }
 
 func (ih *ImageHelper) UploadToS3(buf *bytes.Buffer, pathname string, fileFormat string) error {
 	params := &s3.PutObjectInput{
-		Bucket:      aws.String(ih.config.GetAmazonS3Bucket()),
+		Bucket:      aws.String(ih.Config.GetAmazonS3Bucket()),
 		Key:         aws.String(pathname),
-		ACL:         aws.String(ih.config.GetAmazonS3Acl()),
+		ACL:         aws.String("public-read"),
 		Body:        bytes.NewReader(buf.Bytes()),
 		ContentType: aws.String(fileFormat),
 	}
@@ -99,7 +97,7 @@ func (ih *ImageHelper) UploadToS3(buf *bytes.Buffer, pathname string, fileFormat
 
 func (ih *ImageHelper) BatchDelete(key string) error {
 	params := &s3.ListObjectsInput{
-		Bucket: aws.String(ih.config.GetAmazonS3Bucket()),
+		Bucket: aws.String(ih.Config.GetAmazonS3Bucket()),
 		Prefix: aws.String(key),
 	}
 
@@ -115,19 +113,19 @@ func (ih *ImageHelper) BatchDelete(key string) error {
 		}
 
 		batchSize := 2 //s3Max batch size
-		for i:=0; i<len(objectIdentifiers); i+=batchSize {
-			if i+batchSize > len(objectIdentifiers) {
+		for i := 0; i < len(objectIdentifiers); i += batchSize {
+			if i + batchSize > len(objectIdentifiers) {
 				batchDelete = &s3.Delete{
 					Objects: objectIdentifiers,
 				}
 			} else {
 				batchDelete = &s3.Delete{
-					Objects: objectIdentifiers[i:i+batchSize],
+					Objects: objectIdentifiers[i:i + batchSize],
 				}
 			}
 
 			batchParams = &s3.DeleteObjectsInput{
-				Bucket: aws.String(ih.config.GetAmazonS3Bucket()),
+				Bucket: aws.String(ih.Config.GetAmazonS3Bucket()),
 				Delete: batchDelete,
 			}
 

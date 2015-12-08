@@ -1,12 +1,14 @@
 package datasources
 
 import (
-	"helpers"
-	"models"
-	"utils"
+	"agentdesks"
+	"agentdesks/helpers"
+	"agentdesks/models"
+	"agentdesks/utils"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type DeleteDataSource struct {
@@ -14,7 +16,7 @@ type DeleteDataSource struct {
 	helper  *helpers.ImageHelper
 }
 
-func NewDeleteDataSource(conn *models.Connections, conf *utils.Config) *DeleteDataSource {
+func NewDeleteDataSource(conn *models.Connections, conf *agentdesks.Config) *DeleteDataSource {
 	return &DeleteDataSource{
 		connect: conn,
 		helper:  helpers.NewImageHelper(conf),
@@ -23,8 +25,21 @@ func NewDeleteDataSource(conn *models.Connections, conf *utils.Config) *DeleteDa
 
 func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Request) error {
 	queryValues := r.URL.Query()
-	key := queryValues.Get(utils.IMAGE_KEY)
-	fileLocation, err := redis.Strings(deleteDs.connect.RedisConn.Do("LRANGE", key, 0, -1))
+	imageKey := queryValues.Get("key")
+	var redisKey, s3Key string
+	if imageKey != "" {
+		chunk := strings.Split(imageKey, deleteDs.helper.Config.GetAmazonS3Bucket() + "/")
+		chunk = strings.Split(chunk[len(chunk)-1], "_")
+		s3Key = chunk[0]
+		chunk = strings.Split(s3Key, "/")
+		redisKey = chunk[0] + "/" + chunk[1]
+		log.Println(s3Key)
+	} else {
+		redisKey = queryValues.Get("pathKey")
+		s3Key = redisKey
+	}
+
+	fileLocation, err := redis.Strings(deleteDs.connect.RedisConn.Do("LRANGE", redisKey, 0, -1))
 	if err != nil {
 		log.Println("Error retrieving records (redis) : ", err)
 		return err
@@ -35,9 +50,18 @@ func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Re
 		return nil
 	}
 
-	err = deleteDs.helper.BatchDelete(key)
+	err = deleteDs.helper.BatchDelete(s3Key)
 	if err == nil {
-		deleteDs.connect.RedisConn.Do("DEL", key)
+		utils.WrapResponse(w, nil, http.StatusOK)
+		deleteDs.connect.RedisConn.Do("DEL", redisKey)
+		// Remove only that key from redis and push back the list
+		if imageKey != "" {
+			for _, elem := range fileLocation {
+				if !strings.EqualFold(elem, imageKey) {
+					deleteDs.connect.RedisConn.Do("RPUSH", redisKey, elem)
+				}
+			}
+		}
 	}
 	return err
 }

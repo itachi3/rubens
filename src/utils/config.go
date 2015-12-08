@@ -1,10 +1,12 @@
 package utils
 
 type (
+
 	Config struct {
+		Port string
 		Logs Log       `json:"logs"`
 		Datastore DataStores `json:"dataStores"`
-		Img  Images    `json:"image"`
+		BucketPool map[string]ImageBucket    `json:"imageBucket"`
 	}
 
 	Log struct {
@@ -25,10 +27,9 @@ type (
 	AmazonS3 struct {
 		Region string
 		Bucket string `json:"bucketName"`
-		ACL 	 string
 	}
 
-	Images struct {
+	ImageBucket struct {
 		Width  []string
 		Height []string
 	}
@@ -50,6 +51,6 @@ func (config* Config) GetAmazonS3Bucket() string {
 	return config.Datastore.AwsS3.Bucket
 }
 
-func (config* Config) GetAmazonS3Acl() string {
-	return config.Datastore.AwsS3.ACL
+func (config *Config) GetImageBucket(key string) ImageBucket {
+	return config.BucketPool[key]
 }

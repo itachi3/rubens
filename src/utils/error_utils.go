@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"models"
+	"agentdesks"
+	"agentdesks/models"
 	"bytes"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
@@ -32,7 +33,7 @@ func PanicError(err error, msg string) {
 	}
 }
 
-func InitializeErrorLog(config *Config) *os.File {
+func InitializeErrorLog(config *agentdesks.Config) *os.File {
 	logFile, err := os.OpenFile(config.Logs.ErrorLog, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	PanicError(err, "Error opening access log")
 	log.SetOutput(logFile)

@@ -1,9 +1,10 @@
 package datasources
 
 import (
-	"helpers"
-	"models"
-	"utils"
+	"agentdesks"
+	"agentdesks/helpers"
+	"agentdesks/models"
+	"agentdesks/utils"
 	"github.com/garyburd/redigo/redis"
 	"log"
 	"net/http"
@@ -14,7 +15,7 @@ type DownloadDataSource struct {
 	helper *helpers.ImageHelper
 }
 
-func NewDownloadDataSource(conn *models.Connections, config *utils.Config) *DownloadDataSource {
+func NewDownloadDataSource(conn *models.Connections, config *agentdesks.Config) *DownloadDataSource {
 	return &DownloadDataSource{
 		conn:   conn,
 		helper: helpers.NewImageHelper(config),
@@ -23,7 +24,7 @@ func NewDownloadDataSource(conn *models.Connections, config *utils.Config) *Down
 
 func (download DownloadDataSource) GetImagesLocation(w http.ResponseWriter, r *http.Request) error {
 	queryValues := r.URL.Query()
-	key := queryValues.Get(utils.IMAGE_KEY)
+	key := queryValues.Get("key")
 	//Always get the latest location
 	fileLocation, err := redis.Strings(download.conn.RedisConn.Do("LRANGE", key, 0, -1))
 	if err != nil {
@@ -37,7 +38,7 @@ func (download DownloadDataSource) GetImagesLocation(w http.ResponseWriter, r *h
 	}
 
 	success := models.ImageUrlResponse{
-		FileURL: fileLocation,
+		DynamicImageURL: fileLocation,
 	}
 	utils.WrapResponse(w, success, http.StatusOK)
 	return nil
