@@ -33,7 +33,6 @@ func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Re
 		s3Key = chunk[0]
 		chunk = strings.Split(s3Key, "/")
 		redisKey = chunk[0] + "/" + chunk[1]
-		log.Println(s3Key)
 	} else {
 		redisKey = queryValues.Get("pathKey")
 		s3Key = redisKey
@@ -45,7 +44,7 @@ func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Re
 		return err
 	}
 
-	if len(fileLocation) == 0 {
+	if len(fileLocation) == 0  || !utils.Search(imageKey, fileLocation) {
 		utils.WrapResponse(w, nil, http.StatusNotFound)
 		return nil
 	}

@@ -65,7 +65,7 @@ func (ds UploadDataSource) UploadFile(w http.ResponseWriter, r *http.Request, p 
 	defer file.Close()
 
 	format := handler.Header["Content-Type"]
-	if !utils.Search(format, utils.ACCEPTED_FORMAT) {
+	if !utils.Search(format[0], utils.ACCEPTED_FORMAT) {
 		log.Println("Unknown format: ", format)
 		utils.WrapResponse(w, nil, http.StatusUnsupportedMediaType)
 		return nil
