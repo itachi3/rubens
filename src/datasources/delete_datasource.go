@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"bytes"
 )
 
 type DeleteDataSource struct {
@@ -28,11 +29,20 @@ func (deleteDs *DeleteDataSource) DeleteImages(w http.ResponseWriter, r *http.Re
 	imageKey := queryValues.Get("key")
 	var redisKey, s3Key string
 	if imageKey != "" {
+		/*
+			Split on S3 bucket followed by dynamic delimiter
+			redisKey is the prfix till filename
+		 */
 		chunk := strings.Split(imageKey, deleteDs.helper.Config.GetAmazonS3Bucket() + "/")
 		chunk = strings.Split(chunk[len(chunk)-1], "_")
 		s3Key = chunk[0]
 		chunk = strings.Split(s3Key, "/")
-		redisKey = chunk[0] + "/" + chunk[1]
+		var buffer bytes.Buffer
+		for i:=0; i < len(chunk)-1; i++ {
+			buffer.WriteString(chunk[i] + "/");
+		}
+		redisKey = strings.TrimSuffix(buffer.String(), "/");
+		log.Println(redisKey);
 	} else {
 		redisKey = queryValues.Get("pathKey")
 		s3Key = redisKey
